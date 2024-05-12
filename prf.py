@@ -8,31 +8,45 @@ class RLWE_PRF:
         self.m = m  # Polynomial degree
         self.k = k  # Input length
         
-        # Generate A matrix (uniformly random)
-        self.A = np.random.randint(0, q, size=(n, m))
-
-        # Generate S matrices (uniformly random)
-        self.S = [np.random.randint(0, q, size=(n, n)) for _ in range(k)]
+        self.renew()
     
     def eval(self, x):
         assert len(x) == self.k, "Input length must match k"
         
-        # Compute F(x)
+        # Compute F(x), x is a sequence of bits
         productory = np.identity(self.n)
 
         for i, xi in enumerate(x):
             if xi == 1:
-                productory = np.dot(productory, self.S[i]) % self.p
+                productory = np.dot(productory, self.S[i])
 
-        result = np.dot(self.A.T, productory) % self.p
+        result = np.dot(self.A.T, productory)
+        v_round = np.vectorize(self.round)
+        return v_round(result)
 
-        return result % self.p
+    def round(self, x):
+        return np.round(self.p/self.q * x) % self.p
 
-# Example usage:
-n = 128   # Dimension of the lattice
-p = 2     # Modulus
-q = 4096  # Larger modulus, q >= p
-m = 256   # Polynomial degree
+    def renew(self):
+        # Generate A matrix (uniformly random)
+        self.A = np.random.randint(0, self.q, size=(self.n, self.m))
+
+        # Generate S matrices (uniformly random)
+        self.S = [np.random.randint(0, self.q, size=(self.n, self.n)) for _ in range(self.k)]
+
+
+# Example 1 usage:
+# n = 128   # Dimension of the lattice
+# p = 2     # Modulus
+# q = 4096  # Larger modulus, q >= p
+# m = 256   # Polynomial degree
+# k = 16    # Input length
+
+# Example 2 usage:
+n = 64   # Dimension of the lattice
+p = 5     # Modulus
+q = 10  # Larger modulus, q >= p
+m = n**2   # m = poly(n)
 k = 16    # Input length
 
 rlwe_prf = RLWE_PRF(n, p, q, m, k)
@@ -40,4 +54,3 @@ x = np.random.randint(0, 2, size=k).tolist()  # Input (binary representation as 
 print("\nX = ",x)
 output = rlwe_prf.eval(x)
 print("\nF(x) =", output)
-
