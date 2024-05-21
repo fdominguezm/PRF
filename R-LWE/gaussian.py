@@ -15,25 +15,26 @@ def sample_gaussian(sigma):
     diff = np.absolute(cum_y - uni)
     i = np.argmin(diff) # index of closest y value to the uniform sample
     x_sample = x[i] # this is now a sample from discrete gaussian
+    print(x_sample)
     return x_sample
 
 #  Paper explaining discrete gaussian:
 # https://en.wikipedia.org/wiki/Ring_learning_with_errors#cite_note-4
-def test_dist():
-    sigma = 2 # integer(?) what happens when alpha comes in to play
-    samples = np.array([sample_gaussian(sigma) for i in range(10**4)])
-    vals, counts = np.unique(samples, return_counts=True)
-    # hist, bins = np.histogram(samples, bins=6*sigma, range=(-3*sigma, 3*sigma))
-    fig = plt.figure()
-    ax = fig.gca()
-    ax.bar(vals, counts)
-    ax.set_title("Histogram of samples from discrete gaussian")
-    ax.set_xlabel("Smaple value")
-    ax.set_ylabel("Frequency")
+# def test_dist():
+#     sigma = 2 # integer(?) what happens when alpha comes in to play
+#     samples = np.array([sample_gaussian(sigma) for i in range(10**4)])
+#     vals, counts = np.unique(samples, return_counts=True)
+#     # hist, bins = np.histogram(samples, bins=6*sigma, range=(-3*sigma, 3*sigma))
+#     fig = plt.figure()
+#     ax = fig.gca()
+#     ax.bar(vals, counts)
+#     ax.set_title("Histogram of samples from discrete gaussian")
+#     ax.set_xlabel("Smaple value")
+#     ax.set_ylabel("Frequency")
 
-    ax.xaxis.set_major_locator(MaxNLocator(integer=True)) # restrict ticks to integers
+#     ax.xaxis.set_major_locator(MaxNLocator(integer=True)) # restrict ticks to integers
 
-    fig.show()
-    plt.show()
+#     fig.show()
+#     plt.show()
     
-test_dist()
+# test_dist()

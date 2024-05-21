@@ -1,19 +1,35 @@
 import numpy as np
 
 class LWE:
-    def __init__(self, n, q):
-        self.n = n
-        self.q = q
+    def __init__(self, n, p, q, m, k):
+        self.n = n  # Dimension of the lattice
+        self.p = p  # Modulus
+        self.q = q  # Larger modulus, q >= p
+        self.m = m  # Polynomial degree
+        self.k = k  # Input length
+        
+        self.renew()
+    
+    def eval(self, x):
+        assert len(x) == self.k, "Input length must match k"
+        
+        # Compute F(x), x is a sequence of bits
+        productory = np.identity(self.n)
 
-    def generate_sample(self):
-        a = np.random.randint(0, self.q, self.n)  # Uniformly random polynomial coefficients
-        e = np.random.randint(0, self.q)  # Uniformly random error
-        return a, np.mod(np.dot(a, self.s) + e, self.q)  # Return (a, a*s + e) mod q
+        for i, xi in enumerate(x):
+            if xi == 1:
+                productory = np.dot(productory, self.S[i])
 
-    def decision_lwe(self, samples):
-        # Implementation of decision LWE
-        pass
+        result = np.dot(self.A.T, productory)
+        v_round = np.vectorize(self.round)
+        return v_round(result)
 
-    def search_lwe(self):
-        # Implementation of search LWE
-        pass
+    def round(self, x):
+        return np.round(self.p/self.q * x) % self.p
+
+    def renew(self):
+        # Generate A matrix (uniformly random)
+        self.A = np.random.randint(0, self.q, size=(self.n, self.m))
+
+        # Generate S matrices (uniformly random)
+        self.S = [np.random.randint(0, self.q, size=(self.n, self.n)) for _ in range(self.k)]
