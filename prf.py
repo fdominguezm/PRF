@@ -5,15 +5,15 @@ from gaussian import sample_gaussian
 import random
 
 class RLWE_PRF:
-    def __init__(self, p, n, k, alpha):
+    def __init__(self, p, n, k):
 
         self.p = p  # Modulus
         self.q = int(np.round(p * k*(np.sqrt(n)*np.log2(n))**k*n**(np.log2(n)**0.1)))  # Larger modulus, q >= p
         self.m = n**2  # m = poly(n) 
         self.k = k  # Input length
         
-        # We choose a sigma with alpha*q >= 2n
-        self.sigma = np.ceil(alpha/np.sqrt(2*np.pi)) # αq >= 2√n has to be fulfilled
+        self.alpha = 2*n/self.q  # αq >= 2√n has to be fulfilled.
+        self.sigma = np.ceil(self.alpha/np.sqrt(2*np.pi))
 
         # Set mod polynomial: x^n + 1
         self.mod_polynomial = Polynomial([1 for _ in range(n + 1)])
@@ -97,9 +97,8 @@ class RLWE_PRF:
 p = 5    # Modulus, p >= 2
 n = 2**4   # security parameter, some power of 2
 k = 16    # Input length
-alpha =  1 
 
-rlwe_prf = RLWE_PRF(p, n, k,alpha)
+rlwe_prf = RLWE_PRF(p, n, k)
 
 x = np.random.randint(0, 2, size=k).tolist()  # Input (binary representation as list)
 print("\nX = ",x)
