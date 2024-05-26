@@ -2,6 +2,7 @@ import numpy as np
 import numpy as np
 from polynomial import Polynomial
 from gaussian import sample_gaussian
+import random
 
 class RLWE_PRF:
     def __init__(self, p, q, n, k, alpha):
@@ -24,7 +25,7 @@ class RLWE_PRF:
                 
     # Setup polynomial A
     def generate_a(self):
-        q_a, a_polynomial = divmod(Polynomial([ (np.random.randint(self.q)) for _ in range(self.m + 1)]), self.mod_polynomial)
+        q_a, a_polynomial = divmod(Polynomial([ (random.randint(0, self.q)) for _ in range(self.m + 1)]), self.mod_polynomial)
         return a_polynomial
     
     # Setup a number k of S polynomials 
@@ -100,13 +101,16 @@ class RLWE_PRF:
 
 # # Example 2 usage:
 
-p = 2    # Modulus
-q = 7  # Larger modulus, q >= p
-n = 2**2   # security parameter, some power of 2
+p = 6    # Modulus
+n = 2**4   # security parameter, some power of 2
 k = 16    # Input length
-alpha = 5 * np.ceil(2*np.sqrt(n)/q) # αq >= 2√n has to be fulfilled
 
+q = int(np.round(p * k*(np.sqrt(n)*np.log2(n))**k*n**(np.log2(n)**0.1)))  # Larger modulus, q >= p
+
+alpha = 5 * np.ceil(2*np.sqrt(n)/q) # αq >= 2√n has to be fulfilled
+print('q', q, "type of", type(q))
 rlwe_prf = RLWE_PRF(p, q, n, k, alpha)
+
 x = np.random.randint(0, 2, size=k).tolist()  # Input (binary representation as list)
 print("\nX = ",x)
 output = rlwe_prf.eval(x)

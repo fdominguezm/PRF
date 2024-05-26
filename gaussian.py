@@ -19,7 +19,6 @@ def sample_gaussian(sigma):
     diff = np.absolute(cum_y - uni)
     i = np.argmin(diff) # index of closest y value to the uniform sample
     x_sample = x[i] # this is now a sample from discrete gaussian
-    print(x_sample)
     return x_sample
 
 #  Paper explaining discrete gaussian:
