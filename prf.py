@@ -12,7 +12,8 @@ class RLWE_PRF:
         self.k = k  # Input length
         
         # We choose a sigma with alpha*q >= 2n
-        self.sigma = (np.ceil(alpha * q))/np.sqrt(2*np.pi)
+        self.alpha = alpha
+        self.sigma = np.ceil(alpha/np.sqrt(2*np.pi))
 
         # Set mod polynomial: x^n + 1
         self.mod_polynomial = Polynomial([1 for _ in range(n + 1)])
@@ -101,9 +102,9 @@ class RLWE_PRF:
 
 p = 2    # Modulus
 q = 7  # Larger modulus, q >= p
-n = 4   # security parameter
+n = 2**2   # security parameter, some power of 2
 k = 16    # Input length
-alpha = 1
+alpha = 5 * np.ceil(2*np.sqrt(n)/q) # αq >= 2√n has to be fulfilled
 
 rlwe_prf = RLWE_PRF(p, q, n, k, alpha)
 x = np.random.randint(0, 2, size=k).tolist()  # Input (binary representation as list)

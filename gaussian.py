@@ -3,6 +3,10 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import MaxNLocator
 
 def sample_gaussian(sigma):
+    if (sigma % 1 != 0):
+        raise Exception("Sigma was not integer")
+    if (sigma == 0):
+        raise Exception("Sigma was 0")
     # Sample from a Gaussian distribution with standard deviation sigma
     rho = lambda k: np.exp(-k**2/(2*sigma**2))
     S = np.sqrt(2*np.pi)*sigma # good approximation of S according to section 4 in paper
@@ -20,21 +24,21 @@ def sample_gaussian(sigma):
 
 #  Paper explaining discrete gaussian:
 # https://en.wikipedia.org/wiki/Ring_learning_with_errors#cite_note-4
-# def test_dist():
-#     sigma = 2 # integer(?) what happens when alpha comes in to play
-#     samples = np.array([sample_gaussian(sigma) for i in range(10**4)])
-#     vals, counts = np.unique(samples, return_counts=True)
-#     # hist, bins = np.histogram(samples, bins=6*sigma, range=(-3*sigma, 3*sigma))
-#     fig = plt.figure()
-#     ax = fig.gca()
-#     ax.bar(vals, counts)
-#     ax.set_title("Histogram of samples from discrete gaussian")
-#     ax.set_xlabel("Smaple value")
-#     ax.set_ylabel("Frequency")
+def test_dist():
+    sigma = 2 # integer(?) what happens when alpha comes in to play
+    samples = np.array([sample_gaussian(sigma) for i in range(10**4)])
+    vals, counts = np.unique(samples, return_counts=True)
+    # hist, bins = np.histogram(samples, bins=6*sigma, range=(-3*sigma, 3*sigma))
+    fig = plt.figure()
+    ax = fig.gca()
+    ax.bar(vals, counts)
+    ax.set_title("Histogram of samples from discrete gaussian")
+    ax.set_xlabel("Smaple value")
+    ax.set_ylabel("Frequency")
 
-#     ax.xaxis.set_major_locator(MaxNLocator(integer=True)) # restrict ticks to integers
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True)) # restrict ticks to integers
 
-#     fig.show()
-#     plt.show()
+    fig.show()
+    plt.show()
     
 # test_dist()
