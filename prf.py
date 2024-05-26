@@ -5,16 +5,15 @@ from gaussian import sample_gaussian
 import random
 
 class RLWE_PRF:
-    def __init__(self, p, q, n, k, alpha):
+    def __init__(self, p, n, k, alpha):
 
         self.p = p  # Modulus
-        self.q = q  # Larger modulus, q >= p
+        self.q = int(np.round(p * k*(np.sqrt(n)*np.log2(n))**k*n**(np.log2(n)**0.1)))  # Larger modulus, q >= p
         self.m = n**2  # m = poly(n) 
         self.k = k  # Input length
         
         # We choose a sigma with alpha*q >= 2n
-        self.alpha = alpha
-        self.sigma = np.ceil(alpha/np.sqrt(2*np.pi))
+        self.sigma = np.ceil(alpha/np.sqrt(2*np.pi)) # αq >= 2√n has to be fulfilled
 
         # Set mod polynomial: x^n + 1
         self.mod_polynomial = Polynomial([1 for _ in range(n + 1)])
@@ -61,6 +60,7 @@ class RLWE_PRF:
 
             # If the bit is 1 the multiply the ongoing productory with the Si polynomial
             if xi == 1: 
+
                 # Make the polynomials mod x^n + 1 for the values to stay in the ring
                 q, poly_productory = divmod((poly_productory * s_polynomials[i]), self.mod_polynomial)
 
@@ -76,7 +76,7 @@ class RLWE_PRF:
 
         return result
     
-        # Make the coefficients of a polynomial mod p
+    # Make the coefficients of a polynomial rounded according to the paper
     def coefficients_rounded(self, polynomial):
 
         for i in range(0,polynomial.degree + 1):
@@ -91,25 +91,15 @@ class RLWE_PRF:
             polynomial[i] = polynomial[i] % self.q
 
         return polynomial
-    
-# # Example 1 usage:
 
-# p = 3     # Modulus
-# q = 4096  # Larger modulus, q >= p
-# m = 256   # Polynomial degree
-# k = 16    # Input length
+# Example of usage:
 
-# # Example 2 usage:
-
-p = 6    # Modulus
+p = 5    # Modulus, p >= 2
 n = 2**4   # security parameter, some power of 2
 k = 16    # Input length
+alpha =  1 
 
-q = int(np.round(p * k*(np.sqrt(n)*np.log2(n))**k*n**(np.log2(n)**0.1)))  # Larger modulus, q >= p
-
-alpha = 5 * np.ceil(2*np.sqrt(n)/q) # αq >= 2√n has to be fulfilled
-print('q', q, "type of", type(q))
-rlwe_prf = RLWE_PRF(p, q, n, k, alpha)
+rlwe_prf = RLWE_PRF(p, n, k,alpha)
 
 x = np.random.randint(0, 2, size=k).tolist()  # Input (binary representation as list)
 print("\nX = ",x)
