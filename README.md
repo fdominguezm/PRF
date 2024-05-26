@@ -9,4 +9,4 @@ Output: Pseudorandom polynomial
 1. Create venv: `python -m venv .venv`
 1. Activate venv: (Windows) `./.venv/Scripts/activate`
 1. Install dependencies: `pip install -r ./requirements.txt`
-1. Start: `py ./prf.py`
+1. Start: `python ./prf.py`
